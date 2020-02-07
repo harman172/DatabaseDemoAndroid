@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -89,8 +90,12 @@ public class EmployeeAdapter extends ArrayAdapter {
         etSalary = view.findViewById(R.id.editTextSalary);
         spinnerDept = view.findViewById(R.id.spinnerDepartment);
 
+        String[] dept = context.getResources().getStringArray(R.array.departments);
+        int index = Arrays.asList(dept).indexOf(employee.getDept());
+
         etName.setText(employee.getName());
         etSalary.setText(String.valueOf(employee.getSalary()));
+        spinnerDept.setSelection(index);
 
         view.findViewById(R.id.btn_update).setOnClickListener(new View.OnClickListener() {
             @Override
