@@ -26,9 +26,11 @@ public class EmployeeAdapter extends ArrayAdapter {
     Context context;
     int layoutRes;
     List<Employee> employeeList;
-    SQLiteDatabase database;
+//    SQLiteDatabase database;
 
-    public EmployeeAdapter(@NonNull Context context, int resource, List<Employee> employeeList, SQLiteDatabase database) {
+    DatabaseHelper database;
+
+    public EmployeeAdapter(@NonNull Context context, int resource, List<Employee> employeeList, DatabaseHelper database) {
         super(context, resource, employeeList);
         this.context = context;
         this.layoutRes = resource;
@@ -70,10 +72,8 @@ public class EmployeeAdapter extends ArrayAdapter {
                 deleteEmployee(employee);
             }
         });
-
         return view;
     }
-
 
     private void updateEmployee(final Employee employee) {
 
@@ -117,10 +117,18 @@ public class EmployeeAdapter extends ArrayAdapter {
                     return;
                 }
 
+                /*
                 String query = "UPDATE employees SET name = ?, salary = ?, department = ? WHERE id = ?";
                 database.execSQL(query, new String[]{name, salary, dept, String.valueOf(employee.getId())});
-                Toast.makeText(context, "Employee updated", Toast.LENGTH_SHORT).show();
                 loadEmployees();
+                 */
+
+                if (database.updateEmployee(employee.getId(), name, dept, Double.parseDouble(salary))) {
+                    Toast.makeText(context, "Employee updated", Toast.LENGTH_SHORT).show();
+                    loadEmployees();
+                } else
+                    Toast.makeText(context, "No changes made.", Toast.LENGTH_SHORT).show();
+
                 alertDialog.dismiss();
             }
         });
@@ -133,9 +141,13 @@ public class EmployeeAdapter extends ArrayAdapter {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                /*
                 String query = "DELETE FROM employees WHERE id=?";
                 database.execSQL(query, new Integer[]{employee.getId()});
-                loadEmployees();
+                 */
+
+                if(database.deleteEmployee(employee.getId()))
+                    loadEmployees();
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -151,9 +163,12 @@ public class EmployeeAdapter extends ArrayAdapter {
     }
 
     private void loadEmployees() {
+        /*
         String sql = "SELECT * FROM employees";
         Cursor cursor = database.rawQuery(sql, null);
+         */
 
+        Cursor cursor = database.getAllEmployees();
         employeeList.clear();
         if (cursor.moveToFirst()) {
 
